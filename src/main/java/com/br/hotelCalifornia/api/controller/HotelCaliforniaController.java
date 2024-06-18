@@ -1,38 +1,63 @@
 package com.br.hotelCalifornia.api.controller;
 
-import com.br.hotelCalifornia.infrastructure.model.Hotel;
-import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
+import java.util.List;
+import java.util.Optional;
+//import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-//import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import com.br.hotelCalifornia.infrastructure.model.Hotel;
+import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/hotels")
 public class HotelCaliforniaController {
-
+	
     @Autowired
     private HotelRepository hotelRepository;
-
-    @PostMapping
+    
+    
+    @ResponseBody
+    @PostMapping("/criar")
     public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) {
         Hotel savedHotel = hotelRepository.save(hotel);
         return new ResponseEntity<>(savedHotel, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Hotel> getHotelById(@PathVariable UUID id) {
+    public ResponseEntity<Hotel> getHotelById(@PathVariable int id) {
         Optional<Hotel> hotel = hotelRepository.findById(id);
         return hotel.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @ResponseBody
+    @GetMapping("/listar")
+    public List<Hotel> listar() {
+    	List<Hotel> todosHoteis = hotelRepository.findAll();
+    	return todosHoteis;
+    }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Hotel> updateHotel(@PathVariable UUID id, @RequestBody Hotel hotelDetails) {
+    @PutMapping(value="/alterar/{id}")
+    public ResponseEntity<Hotel> updateHotel(@PathVariable(value = "id") int id, @RequestBody Hotel hotelDetails) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             Hotel hotel = hotelOptional.get();
@@ -47,8 +72,8 @@ public class HotelCaliforniaController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHotel(@PathVariable UUID id) {
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity<Hotel> deleteHotel(@PathVariable(value = "id") int id) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             hotelRepository.delete(hotelOptional.get());
