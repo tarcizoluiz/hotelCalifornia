@@ -1,6 +1,6 @@
 package com.br.hotelCalifornia.infrastructure.model;
 
-//import java.util.UUID;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +20,7 @@ public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
    // @Column(name = "id")
-    private int id;
+    private UUID id;
 
     @Column(name = "nome")
     private String nome;
@@ -35,11 +35,11 @@ public class Hotel {
     private String cnpj;
 
     // Getters and Setters
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

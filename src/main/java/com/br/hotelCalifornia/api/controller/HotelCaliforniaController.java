@@ -3,6 +3,7 @@ package com.br.hotelCalifornia.api.controller;
 import java.util.List;
 import java.util.Optional;
 //import java.util.UUID;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class HotelCaliforniaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Hotel> getHotelById(@PathVariable int id) {
+    public ResponseEntity<Hotel> getHotelById(@PathVariable UUID id) {
         Optional<Hotel> hotel = hotelRepository.findById(id);
         return hotel.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -57,7 +58,7 @@ public class HotelCaliforniaController {
     }
 
     @PutMapping(value="/alterar/{id}")
-    public ResponseEntity<Hotel> updateHotel(@PathVariable(value = "id") int id, @RequestBody Hotel hotelDetails) {
+    public ResponseEntity<Hotel> updateHotel(@PathVariable(value = "id") UUID id, @RequestBody Hotel hotelDetails) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             Hotel hotel = hotelOptional.get();
@@ -73,7 +74,7 @@ public class HotelCaliforniaController {
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Hotel> deleteHotel(@PathVariable(value = "id") int id) {
+    public ResponseEntity<Hotel> deleteHotel(@PathVariable(value = "id") UUID id) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             hotelRepository.delete(hotelOptional.get());
