@@ -42,13 +42,13 @@ public class HotelService {
         }
     }
 
-    public boolean deleteHotel(UUID id) {
+    public String deleteHotel(UUID id) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             hotelRepository.delete(hotelOptional.get());
-            return true;
+            return "Hotel deletado com sucesso";
         } else {
-            return false;
+            return "Hotel não encontrado para deletar";
         }
     }
 }

@@ -56,8 +56,12 @@ public class HotelCaliforniaController {
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Void> deleteHotel(@PathVariable(value = "id") UUID id) {
-        boolean deleted = hotelService.deleteHotel(id);
-        return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> deleteHotel(@PathVariable(value = "id") UUID id) {
+        String mensagem = hotelService.deleteHotel(id);
+        if (mensagem.equals("Hotel deletado com sucesso")) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
