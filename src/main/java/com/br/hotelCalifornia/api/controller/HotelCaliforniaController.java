@@ -2,7 +2,6 @@ package com.br.hotelCalifornia.api.controller;
 
 import java.util.List;
 import java.util.Optional;
-//import java.util.UUID;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,72 +14,50 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.br.hotelCalifornia.domain.services.HotelService;
 import com.br.hotelCalifornia.infrastructure.model.Hotel;
-import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
-@AllArgsConstructor
-@NoArgsConstructor
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/hotels")
 public class HotelCaliforniaController {
-	
+
     @Autowired
-    private HotelRepository hotelRepository;
-    
-    
-    @ResponseBody
+    private HotelService hotelService;
+
     @PostMapping("/criar")
     public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) {
-        Hotel savedHotel = hotelRepository.save(hotel);
+        Hotel savedHotel = hotelService.createHotel(hotel);
         return new ResponseEntity<>(savedHotel, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Hotel> getHotelById(@PathVariable UUID id) {
-        Optional<Hotel> hotel = hotelRepository.findById(id);
+        Optional<Hotel> hotel = hotelService.getHotelById(id);
         return hotel.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    
-    @ResponseBody
+
     @GetMapping("/listar")
     public List<Hotel> listar() {
-    	List<Hotel> todosHoteis = hotelRepository.findAll();
-    	return todosHoteis;
+        return hotelService.listarHoteis();
     }
 
     @PutMapping(value="/alterar/{id}")
-    public ResponseEntity<Hotel> updateHotel(@PathVariable(value = "id") UUID id, @RequestBody Hotel hotelDetails) {
-        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
-        if (hotelOptional.isPresent()) {
-            Hotel hotel = hotelOptional.get();
-            hotel.setNome(hotelDetails.getNome());
-            hotel.setLocalizacao(hotelDetails.getLocalizacao());
-            hotel.setCapacidade(hotelDetails.getCapacidade());
-            hotel.setCnpj(hotelDetails.getCnpj());
-            Hotel updatedHotel = hotelRepository.save(hotel);
-            return new ResponseEntity<>(updatedHotel, HttpStatus.OK);
+    public ResponseEntity<String> updateHotel(@PathVariable(value = "id") UUID id, @RequestBody Hotel hotelDetails) {
+        Optional<Hotel> updatedHotel = hotelService.updateHotel(id, hotelDetails);
+        if (updatedHotel.isPresent()) {
+        	return ResponseEntity.ok("Hotel Alterado com sucesso");
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível encontrar o hotel com o ID: "+ id);
         }
+                          
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<Hotel> deleteHotel(@PathVariable(value = "id") UUID id) {
-        Optional<Hotel> hotelOptional = hotelRepository.findById(id);
-        if (hotelOptional.isPresent()) {
-            hotelRepository.delete(hotelOptional.get());
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Void> deleteHotel(@PathVariable(value = "id") UUID id) {
+        boolean deleted = hotelService.deleteHotel(id);
+        return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
