@@ -1,13 +1,14 @@
 package com.br.hotelCalifornia.domain.services;
 
-import com.br.hotelCalifornia.infrastructure.model.Hotel;
-import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.br.hotelCalifornia.infrastructure.model.Hotel;
+import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
 
 @Service
 public class HotelService {
@@ -50,5 +51,9 @@ public class HotelService {
         } else {
             return "Hotel não encontrado para deletar";
         }
+    }
+    
+    public Optional<Hotel> acharPeloCnpj(String cnpj) {
+        return hotelRepository.findById(cnpj);
     }
 }

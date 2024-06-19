@@ -64,4 +64,14 @@ public class HotelCaliforniaController {
             return ResponseEntity.notFound().build();
         }
     }
-}
+        
+    @GetMapping("/cnpj/{cnpj}")
+    public ResponseEntity<Hotel> acharPeloCnpj(@PathVariable (value = "cnpj") String cnpj) {
+        Optional<Hotel> hotel = hotelService.acharPeloCnpj(cnpj);
+        return hotel.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        }
+    }
+    
+
+	
