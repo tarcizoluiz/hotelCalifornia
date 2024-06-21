@@ -11,6 +11,6 @@ import com.br.hotelCalifornia.infrastructure.model.Hotel;
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel, UUID> {
 
-	Optional<Hotel> findById(String cnpj);
+	Optional<Hotel> findByCnpj(String cnpj);
 
 }

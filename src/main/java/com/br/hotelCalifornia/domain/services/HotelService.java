@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.br.hotelCalifornia.domain.exceptions.HotelNaoEncontradoException;
 import com.br.hotelCalifornia.infrastructure.model.Hotel;
 import com.br.hotelCalifornia.infrastructure.repository.HotelRepository;
 
@@ -28,6 +31,7 @@ public class HotelService {
         return hotelRepository.findAll();
     }
 
+    @Transactional
     public Optional<Hotel> updateHotel(UUID id, Hotel hotelDetails) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
@@ -39,21 +43,29 @@ public class HotelService {
             Hotel updatedHotel = hotelRepository.save(hotel);
             return Optional.of(updatedHotel);
         } else {
-            return Optional.empty();
+           throw new HotelNaoEncontradoException("O Hotel de ID " + id + "não foi encontrado! Não será possível alterá-lo!");
         }
     }
 
+    @Transactional
     public String deleteHotel(UUID id) {
         Optional<Hotel> hotelOptional = hotelRepository.findById(id);
         if (hotelOptional.isPresent()) {
             hotelRepository.delete(hotelOptional.get());
             return "Hotel deletado com sucesso";
         } else {
-            return "Hotel não encontrado para deletar";
+           throw new HotelNaoEncontradoException("Não é possível excluir o hotel de ID " + id + " porque ele não existe!");
         }
     }
     
     public Optional<Hotel> acharPeloCnpj(String cnpj) {
-        return hotelRepository.findById(cnpj);
+    	Optional<Hotel> hotelOptional = hotelRepository.findByCnpj(cnpj);
+        if (hotelOptional.isPresent()) {
+        	return hotelOptional;
+        	
+        } else {
+        	throw new HotelNaoEncontradoException("Não foi possível achar o Hotel de cnpj: " + cnpj);
+        	
+        }
     }
 }
